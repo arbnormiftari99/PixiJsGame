@@ -1,5 +1,7 @@
 import * as PIXI from "pixi.js";
 import { App } from '../system/App';
+import Matter from "matter-js";
+import { Diamond } from "./Diamond";
 
 export class Platform {
     constructor(rows, cols, x) {
@@ -10,9 +12,45 @@ export class Platform {
         this.height = this.tileSize * this.rows;
         this.createContainer(x);
         this.createTiles();
+        this.dx = App.config.platforms.moveSpeed;
+        this.createBody();
+        this.diamonds = [];
+        this.createDiamonds();
 
 
     }
+
+    createDiamonds() {
+        const y = App.config.diamonds.offset.min + Math.random() * (App.config.diamonds.offset.max - App.config.diamonds.offset.min);
+
+        for (let i = 0; i < this.cols; i++) {
+            if (Math.random() < App.config.diamonds.chance) {
+                const diamond = new Diamond(this.tileSize * i, -y);
+                this.container.addChild(diamond.sprite);
+                this.diamonds.push(diamond);
+            }
+        }
+    }
+
+
+    move() {
+        if (this.body) {
+            Matter.Body.setPosition(this.body, {x: this.body.position.x + this.dx, y: this.body.position.y});
+            this.container.x = this.body.position.x - this.width / 2;
+            this.container.y = this.body.position.y - this.height / 2;
+        }
+    }
+
+
+    createBody() {
+        // create a physical body
+        this.body = Matter.Bodies.rectangle(this.width / 2 + this.container.x, this.height / 2 + this.container.y, this.width, this.height, {friction: 0, isStatic: true});
+        // add the created body to the engine
+        Matter.World.add(App.physics.world, this.body);
+        // save a reference to the platform object itself for further access from the physical body object
+        this.body.gamePlatform = this;
+    }
+
     createContainer(x) {
         this.container = new PIXI.Container();
         this.container.x = x;
