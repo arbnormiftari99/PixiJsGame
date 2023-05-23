@@ -1,6 +1,7 @@
+import * as Matter from 'matter-js';
+
 import * as PIXI from "pixi.js";
 import { App } from '../system/App';
-import * as Matter from 'matter-js';
 
 
 export class Hero {
@@ -12,8 +13,45 @@ export class Hero {
         this.dy = App.config.hero.jumpSpeed;
         this.maxJumps = App.config.hero.maxJumps;
         this.jumpIndex = 0;
+        this.score = 0;
 
     }
+
+    collectDiamond(diamond) {
+        let scoreIncrease = 0;
+        if (diamond.sprite.texture === App.res('diamond')) {
+            console.log("Hero caught a diamond!");
+          // Increase score by 1 if the diamond picture is destroyed
+          scoreIncrease = 2;
+        } else if (diamond.sprite.texture === App.res('money')) {
+            console.log("Hero caught money!");
+
+          // Increase score by 2 if the money picture is destroyed
+          scoreIncrease = 1;
+        } else if (diamond.sprite.texture === App.res('money-bag')) {
+            console.log("Hero caught a money bag!");
+
+          // Increase score by 3 if the gem picture is destroyed
+          scoreIncrease = 3;
+        }
+    
+        this.score += scoreIncrease;
+    
+        Matter.World.remove(App.physics.world, diamond.body);
+        diamond.sprite.destroy();
+        diamond.sprite = null;
+        this.sprite.emit('score', this.score);
+      }
+
+    // collectDiamond(diamond) {
+    //     ++this.score;
+    //     Matter.World.remove(App.physics.world, diamond.body);
+    //     diamond.sprite.destroy();
+    //     diamond.sprite = null;
+    //     this.sprite.emit("score");
+
+    // }
+
 
     startJump() {
         if (this.platform || this.jumpIndex === 1) {
@@ -41,6 +79,7 @@ export class Hero {
     update() {
         this.sprite.x = this.body.position.x - this.sprite.width / 2;
         this.sprite.y = this.body.position.y - this.sprite.height / 2;
+     
     }
 
     createSprite() {
