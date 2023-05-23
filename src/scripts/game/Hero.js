@@ -8,7 +8,7 @@ export class Hero {
     constructor() {
         this.createSprite();
         this.createBody();
-        App.app.ticker.add(this.update.bind(this));
+        App.app.ticker.add(this.update, this);
 
         this.dy = App.config.hero.jumpSpeed;
         this.maxJumps = App.config.hero.maxJumps;
@@ -19,16 +19,16 @@ export class Hero {
 
     collectDiamond(diamond) {
         let scoreIncrease = 0;
-        if (diamond.sprite.texture === App.res('diamond')) {
+        if (diamond.sprite && diamond.sprite.texture === App.res('diamond')) {
             console.log("Hero caught a diamond!");
           // Increase score by 1 if the diamond picture is destroyed
           scoreIncrease = 2;
-        } else if (diamond.sprite.texture === App.res('money')) {
+        } else if (diamond.sprite && diamond.sprite.texture === App.res('money')) {
             console.log("Hero caught money!");
 
           // Increase score by 2 if the money picture is destroyed
           scoreIncrease = 1;
-        } else if (diamond.sprite.texture === App.res('money-bag')) {
+        } else if (diamond.sprite && diamond.sprite.texture === App.res('money-bag')) {
             console.log("Hero caught a money bag!");
 
           // Increase score by 3 if the gem picture is destroyed
@@ -38,8 +38,11 @@ export class Hero {
         this.score += scoreIncrease;
     
         Matter.World.remove(App.physics.world, diamond.body);
-        diamond.sprite.destroy();
+        if(diamond.sprite){
+              diamond.sprite.destroy();
         diamond.sprite = null;
+        }
+      
         this.sprite.emit('score', this.score);
       }
 
@@ -79,6 +82,9 @@ export class Hero {
     update() {
         this.sprite.x = this.body.position.x - this.sprite.width / 2;
         this.sprite.y = this.body.position.y - this.sprite.height / 2;
+        if (this.sprite.y > window.innerHeight) {
+            this.sprite.emit("die");
+        }
      
     }
 
@@ -94,4 +100,11 @@ export class Hero {
         this.sprite.animationSpeed = 0.1;
         this.sprite.play();
     }
+
+    destroy() {
+        App.app.ticker.remove(this.update, this);
+        Matter.World.add(App.physics.world, this.body);
+        this.sprite.destroy();
+    }
+
 }

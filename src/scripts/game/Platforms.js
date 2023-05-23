@@ -42,4 +42,9 @@ export class Platforms {
         this.platforms.forEach(platform => platform.move());
 
     }
+
+    destroy() {
+        this.platforms.forEach(platform => platform.destroy());
+        this.container.destroy();
+    }
 }

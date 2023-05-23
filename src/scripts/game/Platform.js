@@ -79,4 +79,11 @@ export class Platform {
         tile1.x = col * tile1.width;
         tile1.y = row * tile1.height;
     }
+
+    destroy() {
+        Matter.World.remove(App.physics.world, this.body);
+        this.diamonds.forEach(diamond => diamond.destroy());
+        this.container.destroy();
+    }
+
 }

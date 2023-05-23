@@ -38,6 +38,8 @@ class Application {
     sprite(key) {
         return new PIXI.Sprite(this.res(key));
     }
+    
+  
 
     start() {
         this.scenes.start("Game");
