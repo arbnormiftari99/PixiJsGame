@@ -1,9 +1,11 @@
-import Matter from "matter-js";
+import * as Matter from 'matter-js';
 import { App } from "../system/App";
 import { Scene } from "../system/Scene";
 import { Background } from "./Background";
 import { Hero } from "./Hero";
 import { Platforms } from "./Platforms";
+import { Diamond } from "./Diamond";
+import { Score } from './Score';
 
 export class Game extends Scene {
     create() {
@@ -11,10 +13,17 @@ export class Game extends Scene {
         this.createHero();
         this.createPlatforms();
         this.setEvents();
+        this.createUI();
 
     }
 
-    
+    createUI() {
+        this.labelScore = new Score();
+        this.container.addChild(this.labelScore);
+        this.hero.sprite.on("score", () => {
+            this.labelScore.renderScore(this.hero.score);
+        });
+    }
 
     setEvents() {
         Matter.Events.on(App.physics, 'collisionStart', this.onCollisionStart.bind(this));
@@ -24,9 +33,12 @@ export class Game extends Scene {
         const colliders = [event.pairs[0].bodyA, event.pairs[0].bodyB];
         const hero = colliders.find(body => body.gameHero);
         const platform = colliders.find(body => body.gamePlatform);
-
+        const diamond = colliders.find(body => body.gameDiamond);
         if (hero && platform) {
             this.hero.stayOnPlatform(platform.gamePlatform);
+        }
+        if (hero && diamond) {
+            this.hero.collectDiamond(diamond.gameDiamond);
         }
     }
 
