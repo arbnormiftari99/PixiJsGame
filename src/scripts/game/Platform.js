@@ -7,7 +7,7 @@ export class Platform {
     constructor(rows, cols, x) {
         this.rows = rows;
         this.cols = cols;
-        this.tileSize = PIXI.Texture.from("tile").width;
+        this.tileSize = PIXI.Texture.from("tile1").width;
         this.width = this.tileSize * this.cols;
         this.height = this.tileSize * this.rows;
         this.createContainer(x);
@@ -25,12 +25,19 @@ export class Platform {
 
         for (let i = 0; i < this.cols; i++) {
             if (Math.random() < App.config.diamonds.chance) {
-                const diamond = new Diamond(this.tileSize * i, -y);
-                this.container.addChild(diamond.sprite);
-                this.diamonds.push(diamond);
+                this.createDiamond(this.tileSize * i, -y);
+               
             }
         }
     }
+
+
+    createDiamond(x, y) {
+        const diamond = new Diamond(x, y);
+        this.container.addChild(diamond.sprite);
+        diamond.createBody();
+        this.diamonds.push(diamond);
+}
 
 
     move() {
@@ -66,10 +73,10 @@ export class Platform {
     }
 
     createTile(row, col) {
-        const texture = row === 0 ? "platform" : "tile" 
-        const tile = App.sprite(texture);
-        this.container.addChild(tile);
-        tile.x = col * tile.width;
-        tile.y = row * tile.height;
+        const texture = row === 0 ? "platform" : "tile1" 
+        const tile1 = App.sprite(texture);
+        this.container.addChild(tile1);
+        tile1.x = col * tile1.width;
+        tile1.y = row * tile1.height;
     }
 }
