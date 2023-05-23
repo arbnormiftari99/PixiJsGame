@@ -3,9 +3,11 @@ import { Tools } from "../system/Tools";
 
 export const Config = {
 
-    bgSpeed: 2,
+    bgSpeed: 4,
+
+
     platforms: {
-        moveSpeed: -3.5,
+        moveSpeed: -5.0,
 
         ranges: {
             rows: {
@@ -22,6 +24,19 @@ export const Config = {
             }
         }
     },
+
+    score: {
+        x: 10,
+        y: 10,
+        anchor: 0,
+        style: {
+            fontFamily: "Verdana",
+            fontWeight: "bold",
+            fontSize: 44,
+            fill: ["#FF7F50"]
+        }
+    },
+
     hero: {
         jumpSpeed: 15,
         maxJumps: 2,
@@ -30,6 +45,7 @@ export const Config = {
             y: 340
         }
     },
+
     diamonds: {
         chance: 0.4,
         offset: {
@@ -37,6 +53,7 @@ export const Config = {
             max: 200
         }
     },
+    
     loader: Tools.massiveRequire(require["context"]('./../../sprites/', true, /\.(mp3|png|jpe?g)$/)),
     scenes: {
         "Game": Game
